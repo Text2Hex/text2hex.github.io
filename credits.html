@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Credits for Text2Hex - Text2Hex Website</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg: #121212;
+    --text: #fff;
+    --btn-bg: #2a2a2a;
+    --btn-border: #444;
+    --hover-bg: #444;
+    --accent: #1da1f2;
+  }
+
+  body.light {
+    --bg: #fff;
+    --text: #000;
+    --btn-bg: #eee;
+    --btn-border: #ccc;
+    --hover-bg: #ddd;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    transition: background 0.3s, color 0.3s;
+    text-align: center;
+  }
+
+  header {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+  }
+
+  .btn-container {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  a.button-link {
+    background-color: var(--btn-bg);
+    border: 1px solid var(--btn-border);
+    color: var(--text);
+    padding: 0.75rem 2.5rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.3s, color 0.3s;
+    min-width: 140px;
+    display: inline-block;
+    text-align: center;
+  }
+
+  a.button-link:hover {
+    background-color: var(--hover-bg);
+    color: var(--accent);
+  }
+
+  .credits-text {
+    max-width: 600px;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  /* Dark mode toggle (optional) */
+  .toggle-darkmode {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: var(--btn-bg);
+    color: var(--text);
+    border: 1px solid var(--btn-border);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.3s;
+    z-index: 1000;
+  }
+
+  .toggle-darkmode:hover {
+    background: var(--hover-bg);
+  }
+</style>
+</head>
+<body>
+
+<header>Credits</header>
+
+<div class="btn-container">
+  <a href="https://github.com/epicinver" target="_blank" rel="noopener noreferrer" class="button-link" aria-label="Creator GitHub">Creator</a>
+  <a href="index.html" class="button-link" aria-label="Homepage">Homepage</a>
+</div>
+
+<div class="credits-text">
+  <p>This project was created and maintained by <strong>Arran Hewitt,</strong> who is also known as "Epicinver" or "Butter" online.</p>
+  <p>Special thanks to everyone who helped test, report bugs, and provided feedback.</p>
+  <p>But, I can't have a credits without thanking all the users! Thank you to everyone who has starred our GitHub repo!</p>
+</div>
+
+<button class="toggle-darkmode" onclick="toggleTheme()">Change Theme</button>
+
+<script>
+  function toggleTheme() {
+    document.body.classList.toggle('light');
+    localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+  }
+
+  window.onload = () => {
+    if (localStorage.getItem('theme') === 'light') {
+      document.body.classList.add('light');
+    }
+  };
+</script>
+
+</body>
+</html>
