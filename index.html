@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Text2Hex Website</title>
+<title>Text2Hex Official Website</title>
 
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
@@ -69,6 +69,7 @@
     justify-content: center;
     gap: 2rem;
     margin-bottom: 4rem;
+    flex-wrap: wrap;
   }
 
   a.button-link {
@@ -119,37 +120,6 @@
     background: var(--hover-bg);
   }
 
-  /* Social media container bottom right */
-  .social-container {
-    position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    z-index: 1000;
-  }
-
-  .social-icon {
-    color: var(--text);
-    font-size: 1.8rem;
-    transition: color 0.3s;
-    text-decoration: none;
-  }
-
-  .social-icon:hover {
-    color: var(--accent);
-  }
-
-  /* Adjust accent colors for specific social icons */
-  .social-icon.youtube:hover {
-    color: #FF0000;
-  }
-
-  .social-icon.bandlab:hover {
-    color: #1db954; /* Green */
-  }
-
   /* Responsive for small screens */
   @media (max-width: 480px) {
     .btn-container {
@@ -159,13 +129,6 @@
     a.button-link {
       min-width: unset;
       width: 100%;
-    }
-    .social-container {
-      flex-direction: row;
-      bottom: 1rem;
-      right: 50%;
-      transform: translateX(50%);
-      gap: 2rem;
     }
   }
 </style>
@@ -177,18 +140,20 @@
 
 <main>
   <p class="intro-text">
-    This is Text2Hex's official website. Contains 2 links: Link to the tutorial and a link to the download.
+    Welcome to the official Text2Hex website! Find downloads, tutorials, credits, and explore Text2Hex Web.
   </p>
 
   <div class="btn-container">
     <a href="https://github.com/Text2Hex/Text2Hex" target="_blank" rel="noopener noreferrer" class="button-link" aria-label="Download Text2Hex">Download</a>
     <a href="https://bit.ly/Text2HexTutorial" target="_blank" rel="noopener noreferrer" class="button-link" aria-label="Text2Hex Tutorial">Tutorial</a>
     <a href="credits.html" class="button-link" aria-label="Credits page">Credits</a>
+    <a href="text2hex-web/index.html" class="button-link" aria-label="Text2Hex Web">Text2Hex Web</a>
   </div>
 </main>
 
 <footer>
-  &copy; 2025 Text2Hex &copy; Text2Hex is owned by Arran Hewitt, other wise known as "Epicinver" or "Butter" online. 
+  &copy; 2025 Text2Hex &nbsp;|&nbsp; Owned by Arran Hewitt ("Epicinver" / "Butter")
+  &nbsp;|&nbsp; 
   <a href="https://x.com/itsbuttryt" target="_blank" rel="noopener noreferrer" style="color: var(--text); text-decoration: underline;">x.com/itsbuttryt</a>
 </footer>
 
@@ -207,4 +172,3 @@
 
 </body>
 </html>
-
