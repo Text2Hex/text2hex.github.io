@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Text2Hex Web</title>
+<style>
+  :root {
+    --bg-light: #f0f0f0;
+    --text-light: #222;
+    --bg-dark: #121212;
+    --text-dark: #eee;
+    --accent: #1da1f2;
+  }
+
+  body {
+    background-color: var(--bg-light);
+    color: var(--text-light);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; padding: 1rem;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  body.dark {
+    background-color: var(--bg-dark);
+    color: var(--text-dark);
+  }
+
+  header {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  select, textarea, button {
+    font-size: 1rem;
+    padding: 0.5rem;
+    margin: 0.3rem 0;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+
+  textarea {
+    min-height: 150px;
+    resize: vertical;
+    font-family: monospace;
+  }
+
+  button {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.25s;
+  }
+  button:hover {
+    background-color: #0d8ddb;
+  }
+
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .flex-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .flex-row > * {
+    flex: 1;
+  }
+
+  label {
+    font-weight: 600;
+    display: block;
+    margin-top: 1rem;
+  }
+
+  .toggle-theme {
+    position: fixed;
+    top: 1rem; right: 1rem;
+    background: var(--accent);
+    border-radius: 6px;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    color: white;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+  <button class="toggle-theme" id="toggleThemeBtn">Dark Mode</button>
+  <div class="container">
+    <header>Text2Hex Web</header>
+
+    <label for="fromFormat">From:</label>
+    <select id="fromFormat">
+      <option>Text</option>
+      <option>Hex</option>
+      <option>Binary</option>
+      <option>Base64</option>
+      <option>Morse</option>
+    </select>
+
+    <label for="inputData">Input:</label>
+    <textarea id="inputData" placeholder="Enter your text or code here..."></textarea>
+
+    <label for="toFormat">To:</label>
+    <select id="toFormat">
+      <option>Hex</option>
+      <option>Text</option>
+      <option>Binary</option>
+      <option>Base64</option>
+      <option>Morse</option>
+    </select>
+
+    <button id="convertBtn">Convert</button>
+
+    <label for="outputData">Output:</label>
+    <textarea id="outputData" readonly placeholder="Result will appear here..."></textarea>
+  </div>
+
+<script>
+  // Morse code mappings
+  const morseMap = {
+    "A": ".-", "B": "-...", "C": "-.-.", "D": "-..", "E": ".", "F": "..-.",
+    "G": "--.", "H": "....", "I": "..", "J": ".---", "K": "-.-", "L": ".-..",
+    "M": "--", "N": "-.", "O": "---", "P": ".--.", "Q": "--.-", "R": ".-.",
+    "S": "...", "T": "-", "U": "..-", "V": "...-", "W": ".--", "X": "-..-",
+    "Y": "-.--", "Z": "--..", "0": "-----", "1": ".----", "2": "..---",
+    "3": "...--", "4": "....-", "5": ".....", "6": "-....", "7": "--...",
+    "8": "---..", "9": "----.", " ": "/"
+  };
+
+  function morseEncode(text) {
+    return text.toUpperCase().split('').map(c => morseMap[c] || '').join(' ').trim();
+  }
+
+  function morseDecode(morse) {
+    const revMap = Object.entries(morseMap).reduce((acc, [k,v]) => (acc[v]=k, acc), {});
+    return morse.split(' ').map(code => revMap[code] || '').join('');
+  }
+
+  function textToHex(text) {
+    return [...new TextEncoder().encode(text)].map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  function hexToText(hex) {
+    try {
+      if(hex.length % 2 !== 0) throw new Error("Invalid hex length");
+      const bytes = new Uint8Array(hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+      return new TextDecoder().decode(bytes);
+    } catch {
+      return "Invalid Hex input";
+    }
+  }
+
+  function textToBinary(text) {
+    return [...new TextEncoder().encode(text)].map(b => b.toString(2).padStart(8, '0')).join('');
+  }
+
+  function binaryToText(bin) {
+    try {
+      if(bin.length % 8 !== 0) throw new Error("Invalid binary length");
+      const bytes = new Uint8Array(bin.match(/.{8}/g).map(b => parseInt(b, 2)));
+      return new TextDecoder().decode(bytes);
+    } catch {
+      return "Invalid Binary input";
+    }
+  }
+
+  function base64Encode(text) {
+    return btoa(text);
+  }
+
+  function base64Decode(b64) {
+    try {
+      return atob(b64);
+    } catch {
+      return "Invalid Base64 input";
+    }
+  }
+
+  function convert() {
+    const from = document.getElementById("fromFormat").value;
+    const to = document.getElementById("toFormat").value;
+    const input = document.getElementById("inputData").value.trim();
+    let intermediate;
+
+    if (!input) {
+      alert("Please enter some input to convert.");
+      return;
+    }
+    try {
+      // Decode input to raw text
+      switch(from) {
+        case "Text": intermediate = input; break;
+        case "Hex": intermediate = hexToText(input); break;
+        case "Binary": intermediate = binaryToText(input); break;
+        case "Base64": intermediate = base64Decode(input); break;
+        case "Morse": intermediate = morseDecode(input); break;
+        default: intermediate = input;
+      }
+      if(intermediate.startsWith("Invalid")) throw new Error(intermediate);
+
+      // Encode raw text to output format
+      let output;
+      switch(to) {
+        case "Text": output = intermediate; break;
+        case "Hex": output = textToHex(intermediate); break;
+        case "Binary": output = textToBinary(intermediate); break;
+        case "Base64": output = base64Encode(intermediate); break;
+        case "Morse": output = morseEncode(intermediate); break;
+        default: output = intermediate;
+      }
+      document.getElementById("outputData").value = output;
+    } catch(e) {
+      alert("Conversion error: " + e.message);
+      document.getElementById("outputData").value = "";
+    }
+  }
+
+  document.getElementById("convertBtn").addEventListener("click", convert);
+
+  // Dark mode toggle
+  const toggleBtn = document.getElementById("toggleThemeBtn");
+  toggleBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    toggleBtn.textContent = document.body.classList.contains("dark") ? "Light Mode" : "Dark Mode";
+    localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+  });
+
+  // Load theme from localStorage
+  window.onload = () => {
+    if(localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark");
+      toggleBtn.textContent = "Light Mode";
+    }
+  }
+</script>
+</body>
+</html>
