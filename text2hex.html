@@ -81,20 +81,185 @@
     margin-top: 1rem;
   }
 
-  .toggle-theme {
+  /* Hide original toggle-theme button */
+  #toggleThemeBtn {
+    display: none;
+  }
+
+  /* Settings button fixed bottom center */
+  #settingsBtn {
     position: fixed;
-    top: 1rem; right: 1rem;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
     background: var(--accent);
-    border-radius: 6px;
-    padding: 0.4rem 0.8rem;
-    cursor: pointer;
     color: white;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
     font-weight: 600;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    z-index: 10000;
+  }
+
+  /* Settings panel popup */
+  #settingsPanel {
+    position: fixed;
+    bottom: 4rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    display: none;
+    z-index: 10000;
+    width: 240px;
+    text-align: center;
+  }
+
+  body.dark #settingsPanel {
+    background: #222;
+    color: var(--text-dark);
+  }
+
+  /* Toggle switch styling */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+    vertical-align: middle;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 26px;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+  }
+
+  input:checked + .slider {
+    background-color: var(--accent);
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(24px);
+  }
+
+  /* Credits text container with slide down/up */
+  #creditsText {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.5s ease, opacity 0.5s ease;
+    text-align: left;
+  }
+
+  #creditsText.visible {
+    max-height: 500px; /* enough for content */
+    opacity: 1;
+  }
+
+  /* Popup modal styles for Upgrade */
+  #popupOverlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 9999;
+  }
+
+  #popupOverlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  #popup {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    max-width: 320px;
+    width: 90%;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    text-align: center;
+    animation: popupShow 0.3s ease forwards;
+  }
+
+  body.dark #popup {
+    background: #222;
+    color: var(--text-dark);
+  }
+
+  #popup h2 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+  }
+
+  #popup p {
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }
+
+  #popup button.closeBtn {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.25s;
+  }
+  #popup button.closeBtn:hover {
+    background-color: #0d8ddb;
+  }
+
+  @keyframes popupShow {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 </style>
 </head>
 <body>
+  <!-- Hidden original toggleThemeBtn -->
   <button class="toggle-theme" id="toggleThemeBtn">Dark Mode</button>
+
   <div class="container">
     <header>Text2Hex Web</header>
 
@@ -120,9 +285,40 @@
     </select>
 
     <button id="convertBtn">Convert</button>
+    <button id="upgradeBtn">Upgrade</button>
 
     <label for="outputData">Output:</label>
     <textarea id="outputData" readonly placeholder="Result will appear here..."></textarea>
+  </div>
+
+  <!-- Settings button -->
+  <button id="settingsBtn" aria-expanded="false" aria-controls="settingsPanel" aria-haspopup="true" aria-label="Open settings">Settings</button>
+
+  <!-- Settings panel with toggle and credits -->
+  <div id="settingsPanel" role="region" aria-labelledby="settingsBtn">
+    <label for="themeToggle" style="font-weight:600; margin-right: 0.5rem;">
+      Dark Mode
+    </label>
+    <label class="switch">
+      <input type="checkbox" id="themeToggle" />
+      <span class="slider"></span>
+    </label>
+    <button id="creditsBtn" style="margin-top: 1rem; width: 100%; background-color: #555; font-weight: 600;">Credits</button>
+    <div id="creditsText" aria-live="polite" aria-atomic="true" role="region">
+      <p>Thanks for using this tool.</p>
+      <p>Credits to GitHub for helping me share this tool, and produce the website/mobile app.</p>
+      <p>Credits to everyone who helped make the tool.</p>
+      <p>Copyright Arran Hewitt, or "Butter/Epicinver" online.</p>
+    </div>
+  </div>
+
+  <!-- Popup overlay -->
+  <div id="popupOverlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="popupHeader" aria-describedby="popupMsg">
+    <div id="popup">
+      <h2 id="popupHeader">Whoops, sorry!</h2>
+      <p id="popupMsg">We don't support upgrading on the Mobile/Website versions yet. Stay tuned!</p>
+      <button class="closeBtn" aria-label="Close popup">OK</button>
+    </div>
   </div>
 
 <script>
@@ -227,21 +423,58 @@
 
   document.getElementById("convertBtn").addEventListener("click", convert);
 
-  // Dark mode toggle
-  const toggleBtn = document.getElementById("toggleThemeBtn");
-  toggleBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-    toggleBtn.textContent = document.body.classList.contains("dark") ? "Light Mode" : "Dark Mode";
-    localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+  // Upgrade button popup logic
+  const upgradeBtn = document.getElementById("upgradeBtn");
+  const popupOverlay = document.getElementById("popupOverlay");
+  const popupCloseBtn = document.querySelector("#popup button.closeBtn");
+
+  upgradeBtn.addEventListener("click", () => {
+    popupOverlay.classList.add("active");
+    popupOverlay.setAttribute("aria-hidden", "false");
   });
 
-  // Load theme from localStorage
+  popupCloseBtn.addEventListener("click", () => {
+    popupOverlay.classList.remove("active");
+    popupOverlay.setAttribute("aria-hidden", "true");
+  });
+
+  // Dark mode toggle switch inside settings
+  const themeToggle = document.getElementById("themeToggle");
+  const settingsBtn = document.getElementById("settingsBtn");
+  const settingsPanel = document.getElementById("settingsPanel");
+  const creditsBtn = document.getElementById("creditsBtn");
+  const creditsText = document.getElementById("creditsText");
+
+  // Load saved theme
   window.onload = () => {
     if(localStorage.getItem("theme") === "dark") {
       document.body.classList.add("dark");
-      toggleBtn.textContent = "Light Mode";
+      themeToggle.checked = true;
     }
   }
+
+  // Toggle theme when switch changes
+  themeToggle.addEventListener("change", () => {
+    document.body.classList.toggle("dark", themeToggle.checked);
+    localStorage.setItem("theme", themeToggle.checked ? "dark" : "light");
+  });
+
+  // Toggle settings panel open/close
+  settingsBtn.addEventListener("click", () => {
+    const isOpen = settingsPanel.style.display === "block";
+    if(isOpen) {
+      settingsPanel.style.display = "none";
+      settingsBtn.setAttribute("aria-expanded", "false");
+    } else {
+      settingsPanel.style.display = "block";
+      settingsBtn.setAttribute("aria-expanded", "true");
+    }
+  });
+
+  // Toggle credits text visibility with slide animation
+  creditsBtn.addEventListener("click", () => {
+    creditsText.classList.toggle("visible");
+  });
 </script>
 </body>
 </html>
